@@ -28,7 +28,7 @@ public class Human implements SpriteAnimation.OnUpdateListener {
 
     SpriteAnimation idleAnimation, runAnimation;
 
-    public Human(Rect dstRect, Bitmap idleBitmap, Bitmap runBitmap) {
+    public Human(final Rect dstRect, Bitmap idleBitmap, Bitmap runBitmap) {
 
         this.dstRect = dstRect;
 
@@ -40,7 +40,22 @@ public class Human implements SpriteAnimation.OnUpdateListener {
         idleAnimation.setOnUpdateListener(this);
 
         runAnimation = new SpriteAnimation(50, new Rect(0, 0, runBitmap.getWidth(), runBitmap.getHeight()), 415, 507, 10);
-        runAnimation.setOnUpdateListener(this);
+        runAnimation.setOnUpdateListener(new SpriteAnimation.OnUpdateListener() {
+            @Override
+            public void onUpdate(int currentHorizontalFrame, int currentVerticalFrame) {
+
+                int width = dstRect.width();
+                dstRect.left += moveSpeed * direction;
+                dstRect.right = dstRect.left + width;
+
+                int left = currentHorizontalFrame * runAnimation.getFrameWidth();
+                int right = left + runAnimation.getFrameWidth();
+                int top = currentVerticalFrame * runAnimation.getFrameHeight();
+                int bottom = top + runAnimation.getFrameHeight();
+
+                srcRect.set(left, top, right, bottom);
+            }
+        });
     }
 
     public void drawHuman(Canvas canvas) {
@@ -81,35 +96,11 @@ public class Human implements SpriteAnimation.OnUpdateListener {
     @Override
     public void onUpdate(int currentHorizontalFrame, int currentVerticalFrame) {
 
-        //int width = dstRect.width();
-        //dstRect.left += moveSpeed * horizontalDirection;
-        //dstRect.right = dstRect.left + width;
 
-        int left = 0, right = 0, top = 0, bottom = 0;
-
-        switch (state) {
-
-            case HUMAN_IDLE:
-
-                left = currentHorizontalFrame * idleAnimation.getFrameWidth();
-                right = left + idleAnimation.getFrameWidth();
-                top = currentVerticalFrame * idleAnimation.getFrameHeight();
-                bottom = top + idleAnimation.getFrameHeight();
-
-                break;
-            case HUMAN_RUN:
-
-                int width = dstRect.width();
-                dstRect.left += moveSpeed * direction;
-                dstRect.right = dstRect.left + width;
-
-                left = currentHorizontalFrame * runAnimation.getFrameWidth();
-                right = left + runAnimation.getFrameWidth();
-                top = currentVerticalFrame * runAnimation.getFrameHeight();
-                bottom = top + runAnimation.getFrameHeight();
-
-                break;
-        }
+        int left = currentHorizontalFrame * idleAnimation.getFrameWidth();
+        int right = left + idleAnimation.getFrameWidth();
+        int top = currentVerticalFrame * idleAnimation.getFrameHeight();
+        int bottom = top + idleAnimation.getFrameHeight();
 
         srcRect.set(left, top, right, bottom);
     }
