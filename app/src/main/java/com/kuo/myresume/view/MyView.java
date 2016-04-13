@@ -51,11 +51,14 @@ public class MyView extends GameManagerView {
         background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.map_1),
                 width, height, true);
 
+        //Bitmap human_de = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.test, options);
 
-        human = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.test, options);
         button = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.movetile01, options);
 
-        humanObj = new Human(3, human.getWidth() / 3, new Rect(100, getHeight() - 500, 300, getHeight() - 300), human);
+        humanObj = new Human(new Rect(100, getHeight() - 500, 300, getHeight() - 300),
+                BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.test, options),
+                BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.test_run, options));
+
         rightButton = new GameButton(getContext(), new Rect(32, 64, 64, 96), new Rect(0, 64, 32, 96), new Rect(250, getHeight() - 200, 350, getHeight() - 100));
         leftButton = new GameButton(getContext(), new Rect(32, 32, 64, 64), new Rect(0, 32, 32, 64), new Rect(100, getHeight() - 200, 200, getHeight() - 100));
     }
@@ -73,7 +76,7 @@ public class MyView extends GameManagerView {
 
     @Override
     public void drawChar(Canvas canvas) {
-        humanObj.drawHuman(canvas, human);
+        humanObj.drawHuman(canvas);
     }
 
     @Override
@@ -91,12 +94,15 @@ public class MyView extends GameManagerView {
     @Override
     public void update() {
 
-        humanObj.update(1, -1);
-
         if(rightButton.isClick()) {
-            humanObj.update(2, 1);
+            humanObj.update(Human.HUMAN_RUN);
+            humanObj.setDirection(1);
         } else if(leftButton.isClick()) {
-            humanObj.update(1, -1);
+            humanObj.update(Human.HUMAN_RUN);
+            humanObj.setDirection(-1);
+        }else {
+            humanObj.update(Human.HUMAN_IDLE);
         }
+
     }
 }

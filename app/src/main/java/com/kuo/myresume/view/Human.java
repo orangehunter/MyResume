@@ -14,47 +14,68 @@ public class Human implements SpriteAnimation.OnUpdateListener {
     long lastFrameChangeTime;
     long frameLengthInMilliseconds = 100;
 
-    Rect dstRect, srcRect;
+    Rect dstRect, srcRect = new Rect();
 
     public static final int HUMAN_IDLE = 0;
     public static final int HUMAN_RUN = 1;
+    public static final int HUMAN_JUMP = 2;
 
     int state = 0;
 
-    int frameWidth = 0;
-
-    int currentFrame = 0;
-
-    int countFrame = 0;
-
-    int moveSpeed = 15;
+    int moveSpeed = 8;
 
     Bitmap idleBitmap, runBitmap;
 
-    SpriteAnimation spriteAnimation;
+    SpriteAnimation idleAnimation, runAnimation;
 
-    public Human(int countFrame, int frameWidth, Rect dstRect, Bitmap runBitmap) {
-        this.frameWidth = frameWidth;
-        this.countFrame = countFrame;
+    public Human(Rect dstRect, Bitmap idleBitmap, Bitmap runBitmap) {
+
         this.dstRect = dstRect;
+
+        this.idleBitmap = idleBitmap;
+
         this.runBitmap = runBitmap;
 
-        srcRect = new Rect();
+        idleAnimation = new SpriteAnimation(50, new Rect(0, 0, idleBitmap.getWidth(), idleBitmap.getHeight()), 319, 486, 10);
+        idleAnimation.setOnUpdateListener(this);
 
-        spriteAnimation = new SpriteAnimation(100, new Rect(0, 0, runBitmap.getWidth(), runBitmap.getHeight()), 319, 486, 10);
-        spriteAnimation.setOnUpdateListener(this);
+        runAnimation = new SpriteAnimation(50, new Rect(0, 0, runBitmap.getWidth(), runBitmap.getHeight()), 415, 507, 10);
+        runAnimation.setOnUpdateListener(this);
     }
 
-    public void drawHuman(Canvas canvas, Bitmap bitmap) {
-        canvas.drawBitmap(runBitmap, srcRect, dstRect, null);
+    public void drawHuman(Canvas canvas) {
+        switch (state) {
+            case HUMAN_IDLE:
+                canvas.drawBitmap(idleBitmap, srcRect, dstRect, null);
+                break;
+            case HUMAN_RUN:
+                canvas.drawBitmap(runBitmap, srcRect, dstRect, null);
+                break;
+        }
     }
 
-    public void update(int verticalCurFrame, int horizontalDirection) {
-        spriteAnimation.start();
+    public void update(int state) {
+
+        switch (state) {
+            case HUMAN_IDLE:
+                idleAnimation.start();
+                break;
+            case HUMAN_RUN:
+                runAnimation.start();
+                break;
+        }
+
+        this.state = state;
     }
 
     public void setMoveSpeed(int moveSpeed) {
         this.moveSpeed = moveSpeed;
+    }
+
+    private int direction = 1;
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
     @Override
@@ -64,10 +85,32 @@ public class Human implements SpriteAnimation.OnUpdateListener {
         //dstRect.left += moveSpeed * horizontalDirection;
         //dstRect.right = dstRect.left + width;
 
-        srcRect.left = currentHorizontalFrame * spriteAnimation.getFrameWidth();
-        srcRect.right = srcRect.left + spriteAnimation.getFrameWidth();
+        int left = 0, right = 0, top = 0, bottom = 0;
 
-        srcRect.top = currentVerticalFrame * spriteAnimation.getFrameHeight();
-        srcRect.bottom = srcRect.top + spriteAnimation.getFrameHeight();
+        switch (state) {
+
+            case HUMAN_IDLE:
+
+                left = currentHorizontalFrame * idleAnimation.getFrameWidth();
+                right = left + idleAnimation.getFrameWidth();
+                top = currentVerticalFrame * idleAnimation.getFrameHeight();
+                bottom = top + idleAnimation.getFrameHeight();
+
+                break;
+            case HUMAN_RUN:
+
+                int width = dstRect.width();
+                dstRect.left += moveSpeed * direction;
+                dstRect.right = dstRect.left + width;
+
+                left = currentHorizontalFrame * runAnimation.getFrameWidth();
+                right = left + runAnimation.getFrameWidth();
+                top = currentVerticalFrame * runAnimation.getFrameHeight();
+                bottom = top + runAnimation.getFrameHeight();
+
+                break;
+        }
+
+        srcRect.set(left, top, right, bottom);
     }
 }
