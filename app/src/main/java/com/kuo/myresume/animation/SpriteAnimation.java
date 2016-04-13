@@ -22,8 +22,8 @@ public class SpriteAnimation {
 
     private OnUpdateListener onUpdateListener;
 
-    public SpriteAnimation(Context context, long frameLengthInMilliseconds, Rect bitmapRect, int frameWidth, int frameHeight, int countFrame) {
-        this.context = context;
+    public SpriteAnimation(long frameLengthInMilliseconds, Rect bitmapRect, int frameWidth, int frameHeight, int countFrame) {
+        //this.context = context;
         this.frameLengthInMilliseconds = frameLengthInMilliseconds;
         this.bitmapRect = bitmapRect;
         this.frameWidth = frameWidth;
@@ -36,21 +36,22 @@ public class SpriteAnimation {
 
     public void start() {
 
-        int nextFrame = 0;
-
         long time  = System.currentTimeMillis();
 
         if ( time > lastFrameChangeTime + frameLengthInMilliseconds) {
+
             lastFrameChangeTime = time;
+
             currentHorizontalFrame++;
+
             if (currentHorizontalFrame >= countHorizontalFrame) {
+
                 currentHorizontalFrame = 0;
-                if(countVerticalFrame > 0) {
-                    currentVerticalFrame++;
-                    if(currentVerticalFrame >= countVerticalFrame) {
-                        currentVerticalFrame = 0;
-                    }
-                }
+
+                currentVerticalFrame++;
+
+                if(currentVerticalFrame >= countVerticalFrame)
+                    currentVerticalFrame = 0;
             }
         }
 
@@ -65,5 +66,13 @@ public class SpriteAnimation {
 
     public void setOnUpdateListener(OnUpdateListener onUpdateListener) {
         this.onUpdateListener = onUpdateListener;
+    }
+
+    public int getFrameHeight() {
+        return frameHeight;
+    }
+
+    public int getFrameWidth() {
+        return frameWidth;
     }
 }

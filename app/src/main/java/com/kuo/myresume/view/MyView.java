@@ -52,10 +52,10 @@ public class MyView extends GameManagerView {
                 width, height, true);
 
 
-        human = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.org_a01, options);
+        human = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.test, options);
         button = BitmapFactory.decodeResource(getContext().getResources(), R.mipmap.movetile01, options);
 
-        humanObj = new Human(3, human.getWidth() / 3, new Rect(100, getHeight() - 500, 300, getHeight() - 300));
+        humanObj = new Human(3, human.getWidth() / 3, new Rect(100, getHeight() - 500, 300, getHeight() - 300), human);
         rightButton = new GameButton(getContext(), new Rect(32, 64, 64, 96), new Rect(0, 64, 32, 96), new Rect(250, getHeight() - 200, 350, getHeight() - 100));
         leftButton = new GameButton(getContext(), new Rect(32, 32, 64, 64), new Rect(0, 32, 32, 64), new Rect(100, getHeight() - 200, 200, getHeight() - 100));
     }
@@ -90,6 +90,8 @@ public class MyView extends GameManagerView {
 
     @Override
     public void update() {
+
+        humanObj.update(1, -1);
 
         if(rightButton.isClick()) {
             humanObj.update(2, 1);

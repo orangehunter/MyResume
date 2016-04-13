@@ -4,10 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
+import com.kuo.myresume.animation.SpriteAnimation;
+
 /**
  * Created by Kuo on 2016/4/13.
  */
-public class Human {
+public class Human implements SpriteAnimation.OnUpdateListener {
 
     long lastFrameChangeTime;
     long frameLengthInMilliseconds = 100;
@@ -29,42 +31,43 @@ public class Human {
 
     Bitmap idleBitmap, runBitmap;
 
-    public Human(int countFrame, int frameWidth, Rect dstRect) {
+    SpriteAnimation spriteAnimation;
+
+    public Human(int countFrame, int frameWidth, Rect dstRect, Bitmap runBitmap) {
         this.frameWidth = frameWidth;
         this.countFrame = countFrame;
         this.dstRect = dstRect;
+        this.runBitmap = runBitmap;
+
+        srcRect = new Rect();
+
+        spriteAnimation = new SpriteAnimation(100, new Rect(0, 0, runBitmap.getWidth(), runBitmap.getHeight()), 319, 486, 10);
+        spriteAnimation.setOnUpdateListener(this);
     }
 
     public void drawHuman(Canvas canvas, Bitmap bitmap) {
-        canvas.drawBitmap(bitmap, srcRect, dstRect, null);
+        canvas.drawBitmap(runBitmap, srcRect, dstRect, null);
     }
 
     public void update(int verticalCurFrame, int horizontalDirection) {
-        long time  = System.currentTimeMillis();
-
-        if ( time > lastFrameChangeTime + frameLengthInMilliseconds) {
-            lastFrameChangeTime = time;
-            currentFrame++;
-            if (currentFrame >= countFrame) {
-                currentFrame = 0;
-            }
-
-            int width = dstRect.width();
-            dstRect.left += moveSpeed * horizontalDirection;
-            dstRect.right = dstRect.left + width;
-        }
-
-        srcRect.left = currentFrame * frameWidth;
-        srcRect.right = srcRect.left + frameWidth;
-        srcRect.top = verticalCurFrame * frameWidth;
-        srcRect.top = srcRect.top + frameWidth;
+        spriteAnimation.start();
     }
 
     public void setMoveSpeed(int moveSpeed) {
         this.moveSpeed = moveSpeed;
     }
 
-    public void updateIdle() {
+    @Override
+    public void onUpdate(int currentHorizontalFrame, int currentVerticalFrame) {
 
+        //int width = dstRect.width();
+        //dstRect.left += moveSpeed * horizontalDirection;
+        //dstRect.right = dstRect.left + width;
+
+        srcRect.left = currentHorizontalFrame * spriteAnimation.getFrameWidth();
+        srcRect.right = srcRect.left + spriteAnimation.getFrameWidth();
+
+        srcRect.top = currentVerticalFrame * spriteAnimation.getFrameHeight();
+        srcRect.bottom = srcRect.top + spriteAnimation.getFrameHeight();
     }
 }
